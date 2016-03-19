@@ -7,7 +7,9 @@ var file = "unipost/unipost.db";
 var exists = fs.existsSync(file);
 
 var sqlite3 = require("sqlite3").verbose();
-var db = new sqlite3.Database(file);
+
+//TODO: Somente pode abrir se o arquivo já existir, quando não existe da erro
+//var db = new sqlite3.Database(file);
 
 database.create = () => {
 	db.serialize(function() {
