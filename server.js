@@ -36,6 +36,7 @@ dispatcher.onGet("/login", function(req, res) {
 });
 
 dispatcher.onPost("/authenticate", function(req, res) {
+    console.log(req.body);
     console.log('authenticate', {username: req.body.username, password: req.body.password});
     // User.findOne({username: req.body.username, password: req.body.password}, function(err, user) {
     //     if (err) {
