@@ -5,6 +5,7 @@ var dispatcher = require('httpdispatcher');
 var database = require('./database');
 var port = 8000;
 var fs = require('fs');
+var jwt = require("jsonwebtoken");
 
 // Arquivos estáticos (js/css/images/etc.).
 dispatcher.setStatic('assets');
@@ -34,9 +35,29 @@ dispatcher.onGet("/login", function(req, res) {
     });
 });
 
-dispatcher.onPost("/login", function(req, res) {
-    res.writeHead(200, {'Content-Type': 'text/html'});
-    res.end('Page Two');
+dispatcher.onPost("/authenticate", function(req, res) {
+    console.log('authenticate', {username: req.body.username, password: req.body.password});
+    // User.findOne({username: req.body.username, password: req.body.password}, function(err, user) {
+    //     if (err) {
+    //         res.json({
+    //             type: false,
+    //             data: "Error occured: " + err
+    //         });
+    //     } else {
+    //         if (user) {
+    //            res.json({
+    //                 type: true,
+    //                 data: user,
+    //                 token: user.token
+    //             });
+    //         } else {
+    //             res.json({
+    //                 type: false,
+    //                 data: "Incorrect email/password"
+    //             });
+    //         }
+    //     }
+    // });
 });
 
 /* SIGNUP */

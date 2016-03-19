@@ -3,13 +3,16 @@
 var database = module.exports = {} ;
 
 var fs = require("fs");
-var file = "unipost/unipost.db";
+var file = "data/unipost.db";
 var exists = fs.existsSync(file);
 
-var sqlite3 = require("sqlite3").verbose();
+if(!exists) {
+    console.log("Criando arquivo DB.");
+    fs.openSync(file, "w");
+}
 
-//TODO: Somente pode abrir se o arquivo já existir, quando não existe da erro
-//var db = new sqlite3.Database(file);
+var sqlite3 = require("sqlite3").verbose();
+var db = new sqlite3.Database(file);
 
 database.create = () => {
 	db.serialize(function() {
