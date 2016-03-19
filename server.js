@@ -36,8 +36,16 @@ dispatcher.onGet("/login", function(req, res) {
 });
 
 dispatcher.onPost("/authenticate", function(req, res) {
-    console.log(req.body);
-    console.log('authenticate', {username: req.body.username, password: req.body.password});
+    console.log('body', req.body);
+    var data = JSON.parse(req.body);
+    console.log('authenticate', {username: data.username, password: data.password});
+
+    res.writeHead(200, {'Content-Type': 'application/json'});
+    res.end(JSON.stringify({ 
+        type: true,
+        token: 'token_temp'
+    }));
+    
     // User.findOne({username: req.body.username, password: req.body.password}, function(err, user) {
     //     if (err) {
     //         res.json({
