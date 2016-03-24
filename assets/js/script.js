@@ -18,10 +18,11 @@ $.fn.serializeObject = function()
 $("#form-login").submit(function(e) {
     e.preventDefault();
     $.post("/authenticate", JSON.stringify($(this).serializeObject()), function(data) {
-        if (data.type) {
-            // TODO: Autenticado
+        if (data.isAuth) {
+            window.document.cookie = 'session=' + data.userId;
+            window.location.href = '/';
         } else {
-            // TODO: Falha de autenticação
+            $('#form-login .alert-warning').show();
         }
     });
 });

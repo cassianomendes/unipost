@@ -19,7 +19,6 @@
   "homepage": "https://github.com/cassianomendes/unipost#readme",
   "devDependencies": {
     "httpdispatcher": "^1.0.0",
-    "jsonwebtoken": "^5.7.0",
     "sqlite3": "^3.1.1"
   }
 }

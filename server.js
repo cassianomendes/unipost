@@ -5,7 +5,6 @@ var dispatcher = require('httpdispatcher');
 var database = require('./database');
 var port = 8000;
 var fs = require('fs');
-var jwt = require("jsonwebtoken");
 
 // Arquivos estáticos (js/css/images/etc.).
 dispatcher.setStatic('assets');
@@ -36,14 +35,13 @@ dispatcher.onGet("/login", function(req, res) {
 });
 
 dispatcher.onPost("/authenticate", function(req, res) {
-    console.log('body', req.body);
-    var data = JSON.parse(req.body);
-    console.log('authenticate', {username: data.username, password: data.password});
-
+    var loginData = JSON.parse(req.body); 
+    console.log('authenticate', {username: loginData.username, password: loginData.password});
+    
     res.writeHead(200, {'Content-Type': 'application/json'});
     res.end(JSON.stringify({ 
-        type: true,
-        token: 'token_temp'
+        isAuth: loginData.username == 'teste',
+        userId: 1 // TODO: UserId
     }));
     
     // User.findOne({username: req.body.username, password: req.body.password}, function(err, user) {
