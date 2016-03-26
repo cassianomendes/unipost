@@ -35,7 +35,7 @@ dispatcher.onGet("/login", function(req, res) {
 });
 
 dispatcher.onPost("/authenticate", function(req, res) {
-    var loginData = JSON.parse(req.body); 
+    var loginData = JSON.parse(req.body);
     console.log('authenticate', {username: loginData.username, password: loginData.password});
     
     res.writeHead(200, {'Content-Type': 'application/json'});
@@ -77,6 +77,11 @@ dispatcher.onGet("/signup", function(req, res) {
         res.writeHead(200, {'Content-Type': 'text/html'});
         res.end(data);
     });
+});
+
+dispatcher.onPost("/signup", function(req, res) {
+    var data = JSON.parse(req.body); 
+    console.log('signup', data);
 });
 
 /* TESTES */

@@ -26,3 +26,10 @@ $("#form-login").submit(function(e) {
         }
     });
 });
+
+$("#form-signup").submit(function(e) {
+    e.preventDefault();
+    $.post("/signup", JSON.stringify($(this).serializeObject()), function(data) {
+        
+    });
+});
