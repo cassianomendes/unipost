@@ -17,9 +17,9 @@ $.fn.serializeObject = function() {
 $("#form-login").submit(function(e) {
     e.preventDefault();
 
-    var formData = JSON.stringify($(this).serializeObject());
+    var formData = $(this).serializeObject();
 
-    $.post("/authenticate", formData, function(res) {
+    $.post("/authenticate", JSON.stringify(formData), function(res) {
         console.log(res);
         if (res.type == false) {
             $('#form-login .alert-warning').text(res.data).show();
@@ -33,9 +33,36 @@ $("#form-login").submit(function(e) {
 $("#form-signup").submit(function(e) {
     e.preventDefault();
 
-    var formData = JSON.stringify($(this).serializeObject());
+    var formData = $(this).serializeObject();
 
-    $.post("/signup", formData, function(res) {
+    if (formData.password !== formData.confirmPassword) {
+        $('#form-signup .alert-warning').text("As senhas não coincidem.").show();
+        return;
+    }
 
+    $.post("/signup", JSON.stringify(formData), function(res) {
+        if (res.type == false) {
+            $('#form-signup .alert-warning').text(res.data).show();
+        } else {
+            window.document.cookie = 'session=' + res.data.id;
+            window.location = '/';
+        }
     });
+});
+
+$(function() {
+    var elements;
+    // TODO: Verificar se existe o Cookie 'session'
+    if (1 === 1) {
+        elements = '<li><a href="/signup">Inscrever-se</a></li>' +
+        '<li><a href="/login">Entrar</a></li>';
+    } else {
+        elements = '<li><a id="link-logout" href="#">Sair</a></li>';
+    }
+    $('#account-header').append($(elements));
+});
+
+$("#link-logout").click(function (e) {
+    // TODO: Limpar o Cookie 'session'
+    window.location = '/';
 });

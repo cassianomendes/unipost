@@ -37,7 +37,7 @@ dispatcher.onGet("/login", function(req, res) {
 dispatcher.onPost("/authenticate", function(req, res) {
     var formData = JSON.parse(req.body);
     
-    database.Users.findOne({email: formData.email, password: formData.password }, function (err, user) {
+    database.Users.findOne({ email: formData.email }, function (err, user) {
         res.writeHead(200, {'Content-Type': 'application/json'});
         if (err) {
             res.end(JSON.stringify({ 
@@ -45,7 +45,7 @@ dispatcher.onPost("/authenticate", function(req, res) {
                 data: "Erro ocorrido: " + err
             }));
         } else {
-            if (user) {
+            if (user && user.password === formData.password) {
                 res.end(JSON.stringify({ 
                     type: true,
                     data: user
@@ -75,7 +75,7 @@ dispatcher.onGet("/signup", function(req, res) {
 dispatcher.onPost("/signup", function(req, res) {
     var formData = JSON.parse(req.body);
     
-    database.Users.findOne({email: formData.email, password: formData.password}, function(err, user) {
+    database.Users.findOne({email: formData.email}, function(err, user) {
         res.writeHead(200, {'Content-Type': 'application/json'});
         if (err) {
             res.end(JSON.stringify({

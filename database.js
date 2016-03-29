@@ -62,10 +62,10 @@ database.Categories = {
 database.Users = {
     save: function (obj, callback) {
         db.run("INSERT INTO User (email, password, isAdmin) VALUES ('" + obj.email + "', '" + obj.password + "', " + obj.isAdmin + ")");
-        // TODO: callback(err, user)
+        this.findOne({ email: obj.email }, callback);
     },
     findOne: function (obj, callback) {
-        db.all("SELECT * FROM User WHERE email='" + obj.email + "' and password='" + obj.password + "'", function (err, rows) {
+        db.all("SELECT * FROM User WHERE email='" + obj.email + "'", function (err, rows) {
             if (err) callback(err);
             callback(null, rows[0]);
         });
