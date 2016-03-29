@@ -17,20 +17,20 @@ var db = new sqlite3.Database(file);
 database.create = () => {
 	db.serialize(function() {
 		 if(!exists) {
-			db.run("CREATE TABLE User (id INTEGER AUTO_INCREMENT PRIMARY KEY NOT NULL,"
+			db.run("CREATE TABLE User (id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,"
 									+ "email TEXT NOT NULL,"
 									+ "password TEXT NOT NULL,"
-									+ "isAdmin INTEGER NOT NULL)");
+									+ "isAdmin BOOLEAN NOT NULL)");
 			
-			db.run("CREATE TABLE Category (id INTEGER AUTO_INCREMENT PRIMARY KEY NOT NULL," 
+			db.run("CREATE TABLE Category (id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL," 
 									    + "name TEXT NOT NULL)");
 									
-			db.run("CREATE TABLE Post (id INTEGER AUTO_INCREMENT PRIMARY KEY NOT NULL,"
+			db.run("CREATE TABLE Post (id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,"
 									+ "categoryId INTEGER NOT NULL,"
 									+ "userId INTEGER NOT NULL,"
 									+ "title TEXT NOT NULL," 
 									+ "content TEXT NOT NULL,"
-									+ "status INTEGER NOT NULL,"
+									+ "status BOOLEAN NOT NULL,"
 									+ "FOREIGN KEY(categoryId) REFERENCES Category(id),"
 									+ "FOREIGN KEY(userId) REFERENCES User(id))");
 		  }				
@@ -51,7 +51,7 @@ database.Categories = {
     delete: function (id) {
         db.run("DELETE * FROM Category where id=" + id); 
     },
-    insert: function (name) {
+    save: function (name) {
         db.run("INSERT INTO Category (name) VALUES ('" + name + "')");
     },
     update: function (id, name) {
@@ -60,13 +60,14 @@ database.Categories = {
 }
 
 database.Users = {
-    insert: function (email, password, isAdmin) {
-        db.run("INSERT INTO User (email, password, isAdmin) VALUES ('" + email + "', '" + password + "', " + isAdmin + ")");
+    save: function (obj, callback) {
+        db.run("INSERT INTO User (email, password, isAdmin) VALUES ('" + obj.email + "', '" + obj.password + "', " + obj.isAdmin + ")");
+        // TODO: callback(err, user)
     },
-    authenticate: function (email, password) {
-        db.all("SELECT * FROM User WHERE email='" + email + "' and password='" + password + "'", function(err, rows) {
-            if (err) throw err;
-            return rows.length > 0;
+    findOne: function (obj, callback) {
+        db.all("SELECT * FROM User WHERE email='" + obj.email + "' and password='" + obj.password + "'", function (err, rows) {
+            if (err) callback(err);
+            callback(null, rows[0]);
         });
     }
 }

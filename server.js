@@ -35,36 +35,29 @@ dispatcher.onGet("/login", function(req, res) {
 });
 
 dispatcher.onPost("/authenticate", function(req, res) {
-    var loginData = JSON.parse(req.body);
-    console.log('authenticate', {username: loginData.username, password: loginData.password});
+    var formData = JSON.parse(req.body);
     
-    res.writeHead(200, {'Content-Type': 'application/json'});
-    res.end(JSON.stringify({ 
-        isAuth: loginData.username == 'teste',
-        userId: 1 // TODO: UserId
-    }));
-    
-    // User.findOne({username: req.body.username, password: req.body.password}, function(err, user) {
-    //     if (err) {
-    //         res.json({
-    //             type: false,
-    //             data: "Error occured: " + err
-    //         });
-    //     } else {
-    //         if (user) {
-    //            res.json({
-    //                 type: true,
-    //                 data: user,
-    //                 token: user.token
-    //             });
-    //         } else {
-    //             res.json({
-    //                 type: false,
-    //                 data: "Incorrect email/password"
-    //             });
-    //         }
-    //     }
-    // });
+    database.Users.findOne({email: formData.email, password: formData.password }, function (err, user) {
+        res.writeHead(200, {'Content-Type': 'application/json'});
+        if (err) {
+            res.end(JSON.stringify({ 
+                type: false,
+                data: "Erro ocorrido: " + err
+            }));
+        } else {
+            if (user) {
+                res.end(JSON.stringify({ 
+                    type: true,
+                    data: user
+                }));
+            } else {
+                res.end(JSON.stringify({ 
+                    type: false,
+                    data: "Usuário e/ou senha inválidos"
+                }));
+            }
+        }
+    });
 });
 
 /* SIGNUP */
@@ -80,8 +73,31 @@ dispatcher.onGet("/signup", function(req, res) {
 });
 
 dispatcher.onPost("/signup", function(req, res) {
-    var data = JSON.parse(req.body); 
-    console.log('signup', data);
+    var formData = JSON.parse(req.body);
+    
+    database.Users.findOne({email: formData.email, password: formData.password}, function(err, user) {
+        res.writeHead(200, {'Content-Type': 'application/json'});
+        if (err) {
+            res.end(JSON.stringify({
+                type: false,
+                data: "Erro ocorrido: " + err
+            }));
+        } else {
+            if (user) {
+                res.end(JSON.stringify({
+                    type: false,
+                    data: "Usuário já existe!"
+                }));
+            } else {
+                database.Users.save({ email: formData.email, password: formData.password, isAdmin: 0 }, function (err, user1) {
+                    res.end(JSON.stringify({
+                        type: true,
+                        data: user1
+                    }));
+                });
+            }
+        }
+    });
 });
 
 /* TESTES */
