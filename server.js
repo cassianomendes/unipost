@@ -19,18 +19,8 @@ dispatcher.onGet("/", function(req, res) {
         if (err) {
             throw err;
         }
-        res.writeHead(200, {'Content-Type': 'text/html'});
-        
-        var accountHeader;
-        if (cookie.getAuthCookie(req)) {
-            accountHeader = '<li><a id="link-logout" href="#">Sair</a></li>';
-        } else {
-            accountHeader = '<li><a href="/signup">Inscrever-se</a></li>' +
-            '<li><a href="/login">Entrar</a></li>';
-        }
-        data = data.replace('@AccountHeader@', accountHeader);
-        
-        res.end(data);
+        res.writeHead(200, { 'Content-Type': 'text/html' });
+        res.end(_replacePageTags(req, data));
     });
 });
 
@@ -41,7 +31,7 @@ dispatcher.onGet("/login", function(req, res) {
         if (err) {
             throw err;
         }
-        res.writeHead(200, {'Content-Type': 'text/html'});
+        res.writeHead(200, { 'Content-Type': 'text/html' });
         res.end(data);
     });
 });
@@ -49,21 +39,21 @@ dispatcher.onGet("/login", function(req, res) {
 dispatcher.onPost("/authenticate", function(req, res) {
     var formData = JSON.parse(req.body);
     setDefaultHeaders(res);
-    database.Users.findOne({ email: formData.email }, function (err, user) {
+    database.Users.findOne({ email: formData.email }, function(err, user) {
         if (err) {
-            res.end(JSON.stringify({ 
+            res.end(JSON.stringify({
                 type: false,
                 data: "Erro ocorrido: " + err
             }));
         } else {
             if (user && user.password === formData.password) {
                 cookie.setAuthCookie(res, user.email);
-                res.end(JSON.stringify({ 
+                res.end(JSON.stringify({
                     type: true,
                     data: user
                 }));
             } else {
-                res.end(JSON.stringify({ 
+                res.end(JSON.stringify({
                     type: false,
                     data: "Usuário e/ou senha inválidos"
                 }));
@@ -79,7 +69,7 @@ dispatcher.onGet("/signup", function(req, res) {
         if (err) {
             throw err;
         }
-        res.writeHead(200, {'Content-Type': 'text/html'});
+        res.writeHead(200, { 'Content-Type': 'text/html' });
         res.end(data);
     });
 });
@@ -87,7 +77,7 @@ dispatcher.onGet("/signup", function(req, res) {
 dispatcher.onPost("/signup", function(req, res) {
     var formData = JSON.parse(req.body);
     setDefaultHeaders(res);
-    database.Users.findOne({email: formData.email}, function(err, user) {
+    database.Users.findOne({ email: formData.email }, function(err, user) {
         if (err) {
             res.end(JSON.stringify({
                 type: false,
@@ -100,7 +90,7 @@ dispatcher.onPost("/signup", function(req, res) {
                     data: "Usuário já existe!"
                 }));
             } else {
-                database.Users.save({ email: formData.email, password: formData.password, isAdmin: 0 }, function (err, user1) {
+                database.Users.save({ email: formData.email, password: formData.password, isAdmin: 0 }, function(err, user1) {
                     cookie.setAuthCookie(res, user.email);
                     res.end(JSON.stringify({
                         type: true,
@@ -114,39 +104,54 @@ dispatcher.onPost("/signup", function(req, res) {
 
 /* CATEGORY */
 
-dispatcher.onGet("/categories", function(req, res) {	
-	isAuthenticated(req, function(user){
-		if (!user) return notAuthorized(req, res);
-		
-		setDefaultHeaders(res);
-		fs.readFile('./views/categories.html', function read(err, data) {
-			if (err) {
-				throw err;
-			}		
-			res.writeHead(200, {'Content-Type': 'text/html'});
-			res.end(data);
-		});
-	});	
+dispatcher.onGet("/categories", function(req, res) {
+    isAuthenticated(req, function(user) {
+        if (!user) return notAuthorized(req, res);
+
+        setDefaultHeaders(res);
+        fs.readFile('./views/categories.html', 'utf-8', function read(err, data) {
+            if (err) {
+                throw err;
+            }
+            res.writeHead(200, { 'Content-Type': 'text/html' });
+            res.end(_replacePageTags(req, data));
+        });
+    });
 });
 
 dispatcher.onGet("/categoriesList", function(req, res) {
-	isAuthenticated(req, function(user){
-		if (!user) return notAuthorized(req, res);
-		
-		setDefaultHeaders(res);
-		
-		database.Categories.all(function (rows) {
-			console.log("Categorias: " + JSON.stringify(rows));
-			res.end(JSON.stringify({
-				type: true,
-				data: rows
-			}));	
-		});
-	});		
+    isAuthenticated(req, function(user) {
+        if (!user) return notAuthorized(req, res);
+
+        setDefaultHeaders(res);
+
+        database.Categories.all(function(rows) {
+            console.log("Categorias: " + JSON.stringify(rows));
+            res.end(JSON.stringify({
+                type: true,
+                data: rows
+            }));
+        });
+    });
 });
 
 dispatcher.onPost("/categories", function(req, res) {
-    var formData = JSON.parse(req.body);	
+    var formData = JSON.parse(req.body);
+});
+
+dispatcher.onGet("/api/categories", function(req, res) {
+    isAuthenticated(req, function(user) {
+        if (!user) return notAuthorized(req, res);
+
+        setDefaultHeaders(res);
+
+        database.Categories.all(function(rows) {
+            res.end(JSON.stringify({
+                type: true,
+                data: rows
+            }));
+        });
+    });
 });
 
 /* POSTS */
@@ -156,7 +161,7 @@ dispatcher.onGet("/posts/create", function(req, res) {
         if (err) {
             throw err;
         }
-        res.writeHead(200, {'Content-Type': 'text/html'});
+        res.writeHead(200, { 'Content-Type': 'text/html' });
         res.end(data);
     });
 });
@@ -164,8 +169,8 @@ dispatcher.onGet("/posts/create", function(req, res) {
 dispatcher.onGet("/api/posts", function(req, res) {
     var url_parts = url.parse(req.url, true);
     var query = url_parts.query;
-    database.Posts.mostRecents(query.title ? query.title : '', function (err, rows) {
-        res.writeHead(200, {'Content-Type': 'application/json'});
+    database.Posts.mostRecents(query.title ? query.title : '', function(err, rows) {
+        res.writeHead(200, { 'Content-Type': 'application/json' });
         if (err) {
             res.end(JSON.stringify({
                 type: false,
@@ -180,54 +185,44 @@ dispatcher.onGet("/api/posts", function(req, res) {
     });
 });
 
-
-/* TESTES */
-
-dispatcher.onGet("/page", function(request, response) {
-	var commands = request.url.split('/');
-	var body = "Hello Bava";
-
-	var content_length = body.length.toString();
-
-	response.writeHead(200, { 'Content-Type': 'text/plain',
-                            'Content-Length': content_length });
-	response.end(body);
-});
-
-dispatcher.onGet("/database", function(request, response) {
-	database.create();
-	response.writeHead(200, { 'Content-Type': 'text/plain',
-                            'Content-Length': 1 });
-	response.end();
-});
-
-function notAuthorized(req, res){
-	fs.readFile('./views/unauthorized.html', function read(err, data) {
-		if (err) {
-			throw err;
-		}		
-		res.writeHead(401, {'Content-Type': 'text/html'});
-		res.end(data);
-	});
+function _replacePageTags(req, data) {
+    var accountHeader;
+    if (cookie.getAuthCookie(req)) {
+        accountHeader = '<li><a id="link-logout" href="#">Sair</a></li>';
+    } else {
+        accountHeader = '<li><a href="/signup">Inscrever-se</a></li>' +
+            '<li><a href="/login">Entrar</a></li>';
+    }
+    return data.replace('@AccountHeader@', accountHeader);
 }
 
-function isAuthenticated(req, callback){
-	var userEmail = cookie.getAuthCookie(req);					
-	if (!userEmail) return callback(undefined); 	
-	database.Users.findOne({email: userEmail}, function(err, user) {				
-		callback(user);		
-	});
+function notAuthorized(req, res) {
+    fs.readFile('./views/unauthorized.html', function read(err, data) {
+        if (err) {
+            throw err;
+        }
+        res.writeHead(401, { 'Content-Type': 'text/html' });
+        res.end(data);
+    });
 }
 
-function setDefaultHeaders(res){
-	res.setHeader('Content-Type', 'application/json');
-	res.statusCode = 200;
+function isAuthenticated(req, callback) {
+    var userEmail = cookie.getAuthCookie(req);
+    if (!userEmail) return callback(undefined);
+    database.Users.findOne({ email: userEmail }, function(err, user) {
+        callback(user);
+    });
+}
+
+function setDefaultHeaders(res) {
+    res.setHeader('Content-Type', 'application/json');
+    res.statusCode = 200;
 }
 
 var server = module.exports = http.createServer(function(req, res) {
-	dispatcher.dispatch(req, res);
+    dispatcher.dispatch(req, res);
 });
 
-server.listen(port, function(){
+server.listen(port, function() {
     console.log("Server listening on: http://localhost:%s", port);
 });

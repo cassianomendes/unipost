@@ -59,20 +59,6 @@ $("#link-logout").click(function (e) {
     window.location = '/';
 });
 
-$("#form-create-post").submit(function(e) {
-    e.preventDefault();
-
-    var formData = $(this).serializeObject();
-
-    $.post("/api/posts/create", JSON.stringify(formData), function(res) {
-        if (res.type == false) {
-            $('#form-create-post .alert-warning').text(res.data).show();
-        } else {
-            window.location = '/';
-        }
-    });
-});
-
 $('#search-post').keypress(function(e) {
     if(e.which == 13) { // ENTER
         loadPosts($(this).val());
@@ -80,9 +66,9 @@ $('#search-post').keypress(function(e) {
 });
 
 function loadCategories() {
-	$.getJSON('/api/categories', function(data) {
-		$('#select-category').find('option').remove();
-		$(data).each(function(index, item){
+	$.getJSON('/api/categories', function(res) {
+		// $('#select-category').find('option').remove();
+		$(res.data).each(function(index, item){
 			var option = '<option value="' + item.id + '">' + item.name + '</option>';
 			$('#select-category').append($(option));
 		});
