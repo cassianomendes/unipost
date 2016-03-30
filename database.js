@@ -38,9 +38,9 @@ database.create = () => {
 }
 
 database.Categories = {
-    all: function () {
-        db.all("SELECT * FROM Category", function(err, rows) {
-            return rows;
+    all: function (callBack) {
+        db.all("SELECT * FROM Category", function(err, rows) {			
+			callBack(rows);
         });
     },
     byId: function (id) {
@@ -49,7 +49,7 @@ database.Categories = {
         });
     },
     delete: function (id) {
-        db.run("DELETE * FROM Category where id=" + id); 
+        db.run("DELETE FROM Category where id=" + id);
     },
     save: function (name) {
         db.run("INSERT INTO Category (name) VALUES ('" + name + "')");
