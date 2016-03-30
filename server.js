@@ -100,6 +100,36 @@ dispatcher.onPost("/signup", function(req, res) {
     });
 });
 
+/* POSTS */
+
+dispatcher.onGet("/posts/create", function(req, res) {
+    fs.readFile('./views/posts/create.html', function read(err, data) {
+        if (err) {
+            throw err;
+        }
+        res.writeHead(200, {'Content-Type': 'text/html'});
+        res.end(data);
+    });
+});
+
+dispatcher.onGet("/api/posts", function(req, res) {
+    database.Posts.mostRecents(function (err, rows) {
+        res.writeHead(200, {'Content-Type': 'application/json'});
+        if (err) {
+            res.end(JSON.stringify({
+                type: false,
+                data: "Erro ocorrido: " + err
+            }));
+        } else {
+            res.end(JSON.stringify({
+                type: true,
+                data: rows
+            }));
+        }
+    });
+});
+
+
 /* TESTES */
 
 dispatcher.onGet("/page", function(request, response) {

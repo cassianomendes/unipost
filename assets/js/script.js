@@ -66,3 +66,50 @@ $("#link-logout").click(function (e) {
     // TODO: Limpar o Cookie 'session'
     window.location = '/';
 });
+
+$("#form-create-post").submit(function(e) {
+    e.preventDefault();
+
+    var formData = $(this).serializeObject();
+
+    $.post("/api/posts/create", JSON.stringify(formData), function(res) {
+        if (res.type == false) {
+            $('#form-create-post .alert-warning').text(res.data).show();
+        } else {
+            window.location = '/';
+        }
+    });
+});
+
+function loadCategories() {
+	$.getJSON('/api/categories', function(data) {
+		$('#select-category').find('option').remove();
+		$(data).each(function(index, item){
+			var option = '<option value="' + item.id + '">' + item.name + '</option>';
+			$('#select-category').append($(option));
+		});
+	});
+}
+
+function loadPosts() {
+    $.getJSON('/api/posts', function(data){
+		$('tbody', '#table-posts').find('tr').remove();
+		$(data).each(function(index, item){
+			var trElement = '<tr item-id=' + item.id + '>' +
+                            '	<td>' +
+                            '		' + index +
+                            '	</td>' +
+                            '	<td>' +
+                            '		' + item.title +
+                            '	</td>' +
+                            '	<td>' +
+                            '		' + item.category +
+                            '	</td>' +
+                            '	<td>' +
+                            '		<a href="/posts?ItemId=' + item.id + '">visualizar</a>' + 
+                            '	</td>' +
+                            '<tr>';
+			$('#table-posts tbody').append($(trElement));
+		});
+	});
+}
