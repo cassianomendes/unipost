@@ -83,6 +83,12 @@ $("#form-create-post").submit(function(e) {
     });
 });
 
+$('#search-post').keypress(function(e) {
+    if(e.which == 13) { // ENTER
+        loadPosts($(this).val());
+    }
+});
+
 function loadCategories() {
 	$.getJSON('/api/categories', function(data) {
 		$('#select-category').find('option').remove();
@@ -93,8 +99,9 @@ function loadCategories() {
 	});
 }
 
-function loadPosts() {
-    $.getJSON('/api/posts', function(res){
+function loadPosts(like) {
+    var url = '/api/posts' + (like ? '?title=' + like : '');
+    $.getJSON(url, function(res){
         if (res.type == false) {
             return;
         }

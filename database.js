@@ -73,7 +73,7 @@ database.Users = {
 }
 
 database.Posts = {
-    mostRecents: function (callback) {
-        db.all("SELECT p.id, p.title, c.name category FROM Post p INNER JOIN Category c ON c.id = p.categoryId WHERE p.status = 1 ORDER BY p.id DESC LIMIT 20", callback);
-    }
+    mostRecents: function (like, callback) {
+        db.all("SELECT p.id, p.title, c.name category FROM Post p INNER JOIN Category c ON c.id = p.categoryId WHERE p.status = 1 AND p.title LIKE '%" + like + "%' ORDER BY p.id DESC LIMIT 20", callback);
+    },
 }

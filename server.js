@@ -5,6 +5,7 @@ var dispatcher = require('httpdispatcher');
 var database = require('./database');
 var port = 8000;
 var fs = require('fs');
+var url = require('url');
 
 // Arquivos estáticos (js/css/images/etc.).
 dispatcher.setStatic('assets');
@@ -113,7 +114,9 @@ dispatcher.onGet("/posts/create", function(req, res) {
 });
 
 dispatcher.onGet("/api/posts", function(req, res) {
-    database.Posts.mostRecents(function (err, rows) {
+    var url_parts = url.parse(req.url, true);
+    var query = url_parts.query;
+    database.Posts.mostRecents(query.title ? query.title : '', function (err, rows) {
         res.writeHead(200, {'Content-Type': 'application/json'});
         if (err) {
             res.end(JSON.stringify({
