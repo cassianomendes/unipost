@@ -60,6 +60,8 @@ $(function() {
         elements = '<li><a id="link-logout" href="#">Sair</a></li>';
     }
     $('#account-header').append($(elements));
+    
+    loadPosts();
 });
 
 $("#link-logout").click(function (e) {
@@ -92,12 +94,15 @@ function loadCategories() {
 }
 
 function loadPosts() {
-    $.getJSON('/api/posts', function(data){
+    $.getJSON('/api/posts', function(res){
+        if (res.type == false) {
+            return;
+        }
 		$('tbody', '#table-posts').find('tr').remove();
-		$(data).each(function(index, item){
+		$(res.data).each(function(index, item){
 			var trElement = '<tr item-id=' + item.id + '>' +
                             '	<td>' +
-                            '		' + index +
+                            '		' + (index + 1) +
                             '	</td>' +
                             '	<td>' +
                             '		' + item.title +
