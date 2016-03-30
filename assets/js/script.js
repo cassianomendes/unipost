@@ -51,16 +51,6 @@ $("#form-signup").submit(function(e) {
 });
 
 $(function() {
-    var elements;
-    // TODO: Verificar se existe o Cookie 'session'
-    if (1 === 1) {
-        elements = '<li><a href="/signup">Inscrever-se</a></li>' +
-        '<li><a href="/login">Entrar</a></li>';
-    } else {
-        elements = '<li><a id="link-logout" href="#">Sair</a></li>';
-    }
-    $('#account-header').append($(elements));
-    
     loadPosts();
 });
 

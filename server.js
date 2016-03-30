@@ -15,11 +15,21 @@ dispatcher.setStaticDirname('');
 /* INDEX */
 
 dispatcher.onGet("/", function(req, res) {
-    fs.readFile('./views/index.html', function read(err, data) {
+    fs.readFile('./views/index.html', 'utf-8', function read(err, data) {
         if (err) {
             throw err;
         }
         res.writeHead(200, {'Content-Type': 'text/html'});
+        
+        var accountHeader;
+        if (cookie.getAuthCookie(req)) {
+            accountHeader = '<li><a id="link-logout" href="#">Sair</a></li>';
+        } else {
+            accountHeader = '<li><a href="/signup">Inscrever-se</a></li>' +
+            '<li><a href="/login">Entrar</a></li>';
+        }
+        data = data.replace('@AccountHeader@', accountHeader);
+        
         res.end(data);
     });
 });
