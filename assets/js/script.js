@@ -24,7 +24,6 @@ $("#form-login").submit(function(e) {
         if (res.type == false) {
             $('#form-login .alert-warning').text(res.data).show();
         } else {
-            window.document.cookie = 'session=' + res.data.id;
             window.location = '/';
         }
     });
@@ -34,7 +33,7 @@ $("#form-signup").submit(function(e) {
     e.preventDefault();
 
     var formData = $(this).serializeObject();
-
+    
     if (formData.password !== formData.confirmPassword) {
         $('#form-signup .alert-warning').text("As senhas não coincidem.").show();
         return;
@@ -44,7 +43,6 @@ $("#form-signup").submit(function(e) {
         if (res.type == false) {
             $('#form-signup .alert-warning').text(res.data).show();
         } else {
-            window.document.cookie = 'session=' + res.data.id;
             window.location = '/';
         }
     });

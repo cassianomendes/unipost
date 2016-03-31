@@ -18,6 +18,7 @@ database.create = () => {
 	db.serialize(function() {
 		 if(!exists) {
 			db.run("CREATE TABLE User (id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,"
+                                    + "fullName TEXT NOT NULL,"
 									+ "email TEXT NOT NULL,"
 									+ "password TEXT NOT NULL,"
 									+ "isAdmin BOOLEAN NOT NULL)");
@@ -61,7 +62,7 @@ database.Categories = {
 
 database.Users = {
     save: function (obj, callback) {
-        db.run("INSERT INTO User (email, password, isAdmin) VALUES ('" + obj.email + "', '" + obj.password + "', " + obj.isAdmin + ")");
+        db.run("INSERT INTO User (fullName, email, password, isAdmin) VALUES (?,?,?,?)", obj.fullName, obj.email, obj.password, obj.isAdmin);
         this.findOne({ email: obj.email }, callback);
     },
     findOne: function (obj, callback) {
