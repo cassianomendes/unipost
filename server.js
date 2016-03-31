@@ -8,11 +8,17 @@ var port = 8000;
 var fs = require('fs');
 var url = require('url');
 
-// Arquivos estáticos (js/css/images/etc.).
+
+// =======================================================
+// ======= ARQUIVOS ESTÁTICOS (js/css/images/etc.) =======
+// =======================================================
 dispatcher.setStatic('assets');
 dispatcher.setStaticDirname('');
 
-/* INDEX */
+
+// =======================================================
+// ===================== PÁGINAS =========================
+// =======================================================
 
 dispatcher.onGet("/", function(req, res) {
     fs.readFile('./views/index.html', 'utf-8', function read(err, data) {
@@ -24,8 +30,6 @@ dispatcher.onGet("/", function(req, res) {
     });
 });
 
-/* LOGIN */
-
 dispatcher.onGet("/login", function(req, res) {
     fs.readFile('./views/login.html', function read(err, data) {
         if (err) {
@@ -36,7 +40,47 @@ dispatcher.onGet("/login", function(req, res) {
     });
 });
 
-dispatcher.onPost("/authenticate", function(req, res) {
+dispatcher.onGet("/signup", function(req, res) {
+    fs.readFile('./views/signup.html', function read(err, data) {
+        if (err) {
+            throw err;
+        }
+        res.writeHead(200, { 'Content-Type': 'text/html' });
+        res.end(data);
+    });
+});
+
+dispatcher.onGet("/categories", function(req, res) {
+    isAuthenticated(req, function(user) {
+        if (!user) return notAuthorized(req, res);
+
+        setDefaultHeaders(res);
+        fs.readFile('./views/categories.html', 'utf-8', function read(err, data) {
+            if (err) {
+                throw err;
+            }
+            res.writeHead(200, { 'Content-Type': 'text/html' });
+            res.end(_replacePageTags(req, data));
+        });
+    });
+});
+
+dispatcher.onGet("/posts/create", function(req, res) {
+    fs.readFile('./views/posts/create.html', function read(err, data) {
+        if (err) {
+            throw err;
+        }
+        res.writeHead(200, { 'Content-Type': 'text/html' });
+        res.end(data);
+    });
+});
+
+
+// =======================================================
+// ========================= API =========================
+// =======================================================
+
+dispatcher.onPost("/api/authenticate", function(req, res) {
     var formData = JSON.parse(req.body);
     setDefaultHeaders(res);
     database.Users.findOne({ email: formData.email }, function(err, user) {
@@ -62,19 +106,7 @@ dispatcher.onPost("/authenticate", function(req, res) {
     });
 });
 
-/* SIGNUP */
-
-dispatcher.onGet("/signup", function(req, res) {
-    fs.readFile('./views/signup.html', function read(err, data) {
-        if (err) {
-            throw err;
-        }
-        res.writeHead(200, { 'Content-Type': 'text/html' });
-        res.end(data);
-    });
-});
-
-dispatcher.onPost("/signup", function(req, res) {
+dispatcher.onPost("/api/signup", function(req, res) {
     var formData = JSON.parse(req.body);
     setDefaultHeaders(res);
     database.Users.findOne({ email: formData.email }, function(err, user) {
@@ -102,43 +134,6 @@ dispatcher.onPost("/signup", function(req, res) {
     });
 });
 
-/* CATEGORY */
-
-dispatcher.onGet("/categories", function(req, res) {
-    isAuthenticated(req, function(user) {
-        if (!user) return notAuthorized(req, res);
-
-        setDefaultHeaders(res);
-        fs.readFile('./views/categories.html', 'utf-8', function read(err, data) {
-            if (err) {
-                throw err;
-            }
-            res.writeHead(200, { 'Content-Type': 'text/html' });
-            res.end(_replacePageTags(req, data));
-        });
-    });
-});
-
-dispatcher.onGet("/categoriesList", function(req, res) {
-    isAuthenticated(req, function(user) {
-        if (!user) return notAuthorized(req, res);
-
-        setDefaultHeaders(res);
-
-        database.Categories.all(function(rows) {
-            console.log("Categorias: " + JSON.stringify(rows));
-            res.end(JSON.stringify({
-                type: true,
-                data: rows
-            }));
-        });
-    });
-});
-
-dispatcher.onPost("/categories", function(req, res) {
-    var formData = JSON.parse(req.body);
-});
-
 dispatcher.onGet("/api/categories", function(req, res) {
     isAuthenticated(req, function(user) {
         if (!user) return notAuthorized(req, res);
@@ -154,16 +149,9 @@ dispatcher.onGet("/api/categories", function(req, res) {
     });
 });
 
-/* POSTS */
-
-dispatcher.onGet("/posts/create", function(req, res) {
-    fs.readFile('./views/posts/create.html', function read(err, data) {
-        if (err) {
-            throw err;
-        }
-        res.writeHead(200, { 'Content-Type': 'text/html' });
-        res.end(data);
-    });
+dispatcher.onPost("/api/categories", function(req, res) {
+    var formData = JSON.parse(req.body);
+    // TODO: Implementar
 });
 
 dispatcher.onGet("/api/posts", function(req, res) {
@@ -184,6 +172,26 @@ dispatcher.onGet("/api/posts", function(req, res) {
         }
     });
 });
+
+dispatcher.onPost("/api/posts", function(req, res) {
+    isAuthenticated(req, function(user) {
+        if (!user) return notAuthorized(req, res);
+
+        var formData = JSON.parse(req.body);
+        
+        setDefaultHeaders(res);
+        
+        database.Posts.save({ categoryId: formData.category, userId: user.id, title: formData.title, content: formData.content, status: 0 });
+        res.end(JSON.stringify({
+            type: true
+        }));
+    });
+});
+
+
+// =======================================================
+// ================== MÉTODOS AUXILIARES =================
+// =======================================================
 
 function _replacePageTags(req, data) {
     var accountHeader;
@@ -218,6 +226,11 @@ function setDefaultHeaders(res) {
     res.setHeader('Content-Type', 'application/json');
     res.statusCode = 200;
 }
+
+
+// =======================================================
+// ======================= SERVIDOR ======================
+// =======================================================
 
 var server = module.exports = http.createServer(function(req, res) {
     dispatcher.dispatch(req, res);

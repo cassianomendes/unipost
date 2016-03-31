@@ -19,7 +19,7 @@ $("#form-login").submit(function(e) {
 
     var formData = $(this).serializeObject();
 
-    $.post("/authenticate", JSON.stringify(formData), function(res) {
+    $.post("/api/authenticate", JSON.stringify(formData), function(res) {
         console.log(res);
         if (res.type == false) {
             $('#form-login .alert-warning').text(res.data).show();
@@ -40,7 +40,7 @@ $("#form-signup").submit(function(e) {
         return;
     }
 
-    $.post("/signup", JSON.stringify(formData), function(res) {
+    $.post("/api/signup", JSON.stringify(formData), function(res) {
         if (res.type == false) {
             $('#form-signup .alert-warning').text(res.data).show();
         } else {

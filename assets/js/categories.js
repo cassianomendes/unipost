@@ -32,10 +32,29 @@ $("#form-categories").submit(function(e) {
 
 
 $(function() {
-    $.get("/categoriesList", function(res) {
-		console.log(res);
-		$.each(res.data, function(index, value ){
-			$("#categoriesTable").last().append("<tr><td>"+value.name+"</td></tr>");
-		});        
-    });
+    _loadCategoriesTable();
+    
+    function _loadCategoriesTable() {
+        $.getJSON('/api/categories', function(res) {
+            if (res.type == false) {
+                return;
+            }
+            $('tbody', '#table-categories').find('tr').remove();
+            $(res.data).each(function(index, item){
+                var trElement = '<tr item-id=' + item.id + '>' +
+                                '	<td>' +
+                                '		' + (index + 1) +
+                                '	</td>' +
+                                '	<td>' +
+                                '		' + item.name +
+                                '	</td>' +
+                                '	<td>' +
+                                '		<a href="/categories/edit?ItemId=' + item.id + '">alterar</a>' +
+                                '		<a href="/categories/delete?ItemId=' + item.id + '">excluir</a>' +  
+                                '	</td>' +
+                                '<tr>';
+                $('#table-categories tbody').append($(trElement));
+            });
+        });
+    }
 });
