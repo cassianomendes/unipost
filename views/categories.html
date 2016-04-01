@@ -1,13 +1,16 @@
 <!DOCTYPE html>
 
 <html lang="pt-br" xmlns="http://www.w3.org/1999/xhtml">
+
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Categorias - UniPost</title>
+    <link href="/assets/lib/jquery/jquery-ui.min.css" rel="stylesheet" />
     <link href="/assets/lib/bootstrap/bootstrap.min.css" rel="stylesheet" />
     <link href="/assets/css/app.css" rel="stylesheet" />
 </head>
+
 <body>
     <div class="navbar navbar-inverse navbar-fixed-top">
         <div class="container">
@@ -43,6 +46,13 @@
                 </tbody>
             </table>
         </div>
+        <div id="dialog-form-category">
+            <div class="form-group">
+                <div class="col-md-10">
+                    <input id="txtCategory" type="text" name="catName" class="form-control" placeholder="Nome da Categoria" required />
+                </div>
+            </div>
+        </div>
         <hr />
         <footer>
             <p>&copy; 2016 - UniPost</p>
@@ -51,7 +61,9 @@
 
     <script src="/assets/lib/jquery/jquery-2.2.2.min.js"></script>
     <script src="/assets/lib/bootstrap/bootstrap.min.js"></script>
+    <script src="/assets/lib/jquery/jquery-ui.min.js"></script>
     <script src="/assets/js/app.js"></script>
-	<script src="/assets/js/categories.js"></script>	
+    <script src="/assets/js/categories.js"></script>
 </body>
+
 </html>

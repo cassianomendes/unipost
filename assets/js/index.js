@@ -51,7 +51,7 @@ $(function() {
                     '		' + item.author +
                     '	</td>' +
                     '	<td>' +
-                    '		<a class="link-post-view" onClick="openDialog(' + item.id + ')">visualizar</a>' +
+                    '		<a onClick="openDialog(' + item.id + ')">visualizar</a>' +
                     '	</td>' +
                     '<tr>';
                 $('#table-posts tbody').append($(trElement));

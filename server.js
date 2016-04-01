@@ -196,6 +196,32 @@ dispatcher.onPost("/api/categories", function(req, res) {
     });    	
 });
 
+dispatcher.onPost("/api/categories/delete", function(req, res) {
+    isAuthenticated(req, function(user) {
+        if (!user || !isAdmin(user)) return notAuthorized(req, res);
+
+        database.Categories.delete(req.params.id);
+        
+        setDefaultHeaders(res);
+        res.end(JSON.stringify({
+            type: true
+        }));
+    });
+});
+
+dispatcher.onPost("/api/categories/edit", function(req, res) {
+    isAuthenticated(req, function(user) {
+        if (!user || !isAdmin(user)) return notAuthorized(req, res);
+
+        database.Categories.update(req.params.id, req.params.name);
+        
+        setDefaultHeaders(res);
+        res.end(JSON.stringify({
+            type: true
+        }));
+    });
+});
+
 dispatcher.onGet("/api/posts/mostRecents", function(req, res) {
     var url_parts = url.parse(req.url, true);
     var query = url_parts.query;

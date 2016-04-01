@@ -19,6 +19,6 @@ div .table-responsive {
     float: right;
 }
 
-.link-post-view {
+table>tbody>tr>td>a {
     cursor: pointer;
 }
