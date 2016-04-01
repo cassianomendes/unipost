@@ -182,10 +182,29 @@ dispatcher.onPost("/api/categories", function(req, res) {
     });    	
 });
 
-dispatcher.onGet("/api/posts", function(req, res) {
+dispatcher.onGet("/api/posts/mostRecents", function(req, res) {
     var url_parts = url.parse(req.url, true);
     var query = url_parts.query;
     database.Posts.mostRecents(query.title ? query.title : '', function(err, rows) {
+        setDefaultHeaders(res);
+        if (err) {
+            res.end(JSON.stringify({
+                type: false,
+                data: "Erro ocorrido: " + err
+            }));
+        } else {
+            res.end(JSON.stringify({
+                type: true,
+                data: rows
+            }));
+        }
+    });
+});
+
+dispatcher.onGet("/api/posts", function(req, res) {
+    var url_parts = url.parse(req.url, true);
+    var query = url_parts.query;
+    database.Posts.findOne({ id: query.id }, function(err, rows) {
         setDefaultHeaders(res);
         if (err) {
             res.end(JSON.stringify({

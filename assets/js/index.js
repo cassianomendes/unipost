@@ -1,3 +1,5 @@
+var dialog;
+
 $(function() {
     $('#search-post').keypress(function(e) {
         if (e.which == 13) { // ENTER
@@ -5,10 +7,30 @@ $(function() {
         }
     });
 
+    dialog = $("#dialog-post-view").dialog({
+        autoOpen: false,
+        height: 300,
+        width: 350,
+        modal: true,
+        buttons: {
+            // "Salvar": addItem,
+            "Fechar": function() {
+                dialog.dialog("close");
+            }
+        },
+        close: function() {
+            $(':input', '#formNewIte')
+                .not(':button, :submit, :reset, :hidden')
+                .val('')
+                .removeAttr('checked')
+                .removeAttr('selected');
+        }
+    });
+
     _loadPosts();
 
     function _loadPosts(like) {
-        var url = '/api/posts' + (like ? '?title=' + like : '');
+        var url = '/api/posts/mostRecents' + (like ? '?title=' + like : '');
         $.getJSON(url, function(res) {
             if (res.type == false) {
                 return;
@@ -29,7 +51,7 @@ $(function() {
                     '		' + item.author +
                     '	</td>' +
                     '	<td>' +
-                    '		<a onClick="openDialog(' + item.content + ')">visualizar</a>' +
+                    '		<a onClick="openDialog(' + item.id + ')">visualizar</a>' +
                     '	</td>' +
                     '<tr>';
                 $('#table-posts tbody').append($(trElement));
@@ -37,3 +59,14 @@ $(function() {
         });
     }
 });
+
+function openDialog(id) {
+    var url = '/api/posts?id=' + id;
+    $.getJSON(url, function(res) {
+        if (res.type == false) {
+            return;
+        }
+        $('#dialog-post-view').empty().append(res.data.content);
+        dialog.dialog("option", "title", res.data.title).dialog("open");
+    });
+}

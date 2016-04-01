@@ -84,5 +84,11 @@ database.Posts = {
     },
     save: function (obj) {
         db.run("INSERT INTO Post (categoryId, userId, title, content, status) VALUES (?,?,?,?,?)", obj.categoryId, obj.userId, obj.title, obj.content, obj.status);
+    },
+    findOne: function (obj, callback) {
+        db.all("SELECT * FROM Post WHERE id=" + obj.id + "", function (err, rows) {
+            if (err) callback(err);
+            callback(null, rows[0]);
+        });
     }
 }
