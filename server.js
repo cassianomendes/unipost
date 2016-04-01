@@ -81,12 +81,16 @@ dispatcher.onGet("/categories/create", function(req, res) {
 });
 
 dispatcher.onGet("/posts/create", function(req, res) {
-    fs.readFile('./views/posts/create.html', function read(err, data) {
-        if (err) {
-            throw err;
-        }
-        res.writeHead(200, { 'Content-Type': 'text/html' });
-        res.end(data);
+    isAuthenticated(req, function(user) {		
+        if (!user) return notAuthorized(req, res);
+
+        fs.readFile('./views/posts/create.html', function read(err, data) {
+            if (err) {
+                throw err;
+            }
+            res.writeHead(200, { 'Content-Type': 'text/html' });
+            res.end(data);
+        });
     });
 });
 
@@ -151,7 +155,7 @@ dispatcher.onPost("/api/signup", function(req, res) {
 
 dispatcher.onGet("/api/categories", function(req, res) {
     isAuthenticated(req, function(user) {
-        if (!user || !isAdmin(user)) return notAuthorized(req, res);
+        if (!user) return notAuthorized(req, res);
 
         setDefaultHeaders(res);
 
@@ -182,7 +186,7 @@ dispatcher.onGet("/api/posts", function(req, res) {
     var url_parts = url.parse(req.url, true);
     var query = url_parts.query;
     database.Posts.mostRecents(query.title ? query.title : '', function(err, rows) {
-        res.writeHead(200, { 'Content-Type': 'application/json' });
+        setDefaultHeaders(res);
         if (err) {
             res.end(JSON.stringify({
                 type: false,

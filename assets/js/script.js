@@ -48,10 +48,6 @@ $("#form-signup").submit(function(e) {
     });
 });
 
-$(function() {
-    loadPosts();
-});
-
 $("#link-logout").click(function (e) {
     // TODO: Limpar o Cookie 'session'
 	document.cookie = "AuthUser=; expires=Thu, 01 Jan 1970 00:00:00 GMT";
@@ -60,45 +56,11 @@ $("#link-logout").click(function (e) {
     window.location = '/';
 });
 
-$('#search-post').keypress(function(e) {
-    if(e.which == 13) { // ENTER
-        loadPosts($(this).val());
-    }
-});
-
 function loadCategories() {
 	$.getJSON('/api/categories', function(res) {
-		// $('#select-category').find('option').remove();
 		$(res.data).each(function(index, item){
 			var option = '<option value="' + item.id + '">' + item.name + '</option>';
 			$('#select-category').append($(option));
-		});
-	});
-}
-
-function loadPosts(like) {
-    var url = '/api/posts' + (like ? '?title=' + like : '');
-    $.getJSON(url, function(res){
-        if (res.type == false) {
-            return;
-        }
-		$('tbody', '#table-posts').find('tr').remove();
-		$(res.data).each(function(index, item){
-			var trElement = '<tr item-id=' + item.id + '>' +
-                            '	<td>' +
-                            '		' + (index + 1) +
-                            '	</td>' +
-                            '	<td>' +
-                            '		' + item.title +
-                            '	</td>' +
-                            '	<td>' +
-                            '		' + item.category +
-                            '	</td>' +
-                            '	<td>' +
-                            '		<a onClick="openDialog('+item.content+')">visualizar</a>' + 
-                            '	</td>' +
-                            '<tr>';
-			$('#table-posts tbody').append($(trElement));
 		});
 	});
 }
