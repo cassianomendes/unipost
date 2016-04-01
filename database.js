@@ -18,6 +18,7 @@ database.create = () => {
 	db.serialize(function() {
 		 if(!exists) {
 			db.run("CREATE TABLE User (id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,"
+                                    + "fullName TEXT NOT NULL,"
 									+ "email TEXT NOT NULL,"
 									+ "password TEXT NOT NULL,"
 									+ "isAdmin BOOLEAN NOT NULL)");
@@ -61,7 +62,7 @@ database.Categories = {
 
 database.Users = {
     save: function (obj, callback) {
-        db.run("INSERT INTO User (email, password, isAdmin) VALUES ('" + obj.email + "', '" + obj.password + "', " + obj.isAdmin + ")");
+        db.run("INSERT INTO User (fullName, email, password, isAdmin) VALUES (?,?,?,?)", obj.fullName, obj.email, obj.password, obj.isAdmin);
         this.findOne({ email: obj.email }, callback);
     },
     findOne: function (obj, callback) {
@@ -69,5 +70,14 @@ database.Users = {
             if (err) callback(err);
             callback(null, rows[0]);
         });
+    }
+}
+
+database.Posts = {
+    mostRecents: function (like, callback) {
+        db.all("SELECT p.id, p.title, c.name category FROM Post p INNER JOIN Category c ON c.id = p.categoryId WHERE p.status = 1 AND p.title LIKE '%" + like + "%' ORDER BY p.id DESC LIMIT 20", callback);
+    },
+    save: function (obj) {
+        db.run("INSERT INTO Post (categoryId, userId, title, content, status) VALUES (?,?,?,?,?)", obj.categoryId, obj.userId, obj.title, obj.content, obj.status);
     }
 }
