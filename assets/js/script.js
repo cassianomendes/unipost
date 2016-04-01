@@ -54,6 +54,9 @@ $(function() {
 
 $("#link-logout").click(function (e) {
     // TODO: Limpar o Cookie 'session'
+	document.cookie = "AuthUser=; expires=Thu, 01 Jan 1970 00:00:00 GMT";
+                  //(sDomain ? "; domain=" + sDomain : "") + 
+                  //s(sPath ? "; path=" + sPath : "");
     window.location = '/';
 });
 
@@ -100,9 +103,9 @@ function loadPosts(like) {
 	});
 }
 
-function openDialog(content){
+function openDialog(content) {
     $('#dialog').dialog();
     $('#dialog-content').find('div').remove();    
     var text ="<div>" + content + "</div>";    
-    $('#dialog-content').append($(text));        
+    $('#dialog-content').append($(text));
 }

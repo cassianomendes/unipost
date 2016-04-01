@@ -21,6 +21,10 @@ cookie.getAuthCookie = (req) => {
 };
 
 cookie.setAuthCookie = (res, value) => {
-	res.setHeader('Set-Cookie', authCookieName + '=' + new Buffer(value).toString('base64'));
+	var now = new Date();
+	var time = now.getTime();
+	time += 3600 * 1000;
+	now.setTime(time);
+	res.setHeader('Set-Cookie', authCookieName + '=' + new Buffer(value).toString('base64') + "; expires="+ now.toUTCString() + "; path=/;");
 	return res;
 };

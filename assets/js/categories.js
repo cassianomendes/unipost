@@ -19,13 +19,13 @@ $("#form-categories").submit(function(e) {
 
     var formData = $(this).serializeObject();
 
-    $.post("/authenticate", JSON.stringify(formData), function(res) {
+    $.post("/api/categories", JSON.stringify(formData), function(res) {
         console.log(res);
         if (res.type == false) {
-            $('#form-login .alert-warning').text(res.data).show();
+            $('#form-categories .alert-warning').text(res.data).show();
         } else {
             //Cookie no Server - window.document.cookie = 'session=' + res.data.id;
-            window.location = '/';
+            window.location = '/categories';
         }
     });
 });

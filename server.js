@@ -51,11 +51,26 @@ dispatcher.onGet("/signup", function(req, res) {
 });
 
 dispatcher.onGet("/categories", function(req, res) {
-    isAuthenticated(req, function(user) {
-        if (!user) return notAuthorized(req, res);
+    isAuthenticated(req, function(user) {		
+        if (!user || !isAdmin(user)) return notAuthorized(req, res);
 
         setDefaultHeaders(res);
         fs.readFile('./views/categories.html', 'utf-8', function read(err, data) {
+            if (err) {
+                throw err;
+            }
+            res.writeHead(200, { 'Content-Type': 'text/html' });
+            res.end(_replacePageTags(req, data));
+        });
+    });
+});
+
+dispatcher.onGet("/categories/create", function(req, res) {
+    isAuthenticated(req, function(user) {		
+        if (!user || !isAdmin(user)) return notAuthorized(req, res);
+
+        setDefaultHeaders(res);
+        fs.readFile('./views/categories/create.html', 'utf-8', function read(err, data) {
             if (err) {
                 throw err;
             }
@@ -136,7 +151,7 @@ dispatcher.onPost("/api/signup", function(req, res) {
 
 dispatcher.onGet("/api/categories", function(req, res) {
     isAuthenticated(req, function(user) {
-        if (!user) return notAuthorized(req, res);
+        if (!user || !isAdmin(user)) return notAuthorized(req, res);
 
         setDefaultHeaders(res);
 
@@ -150,8 +165,17 @@ dispatcher.onGet("/api/categories", function(req, res) {
 });
 
 dispatcher.onPost("/api/categories", function(req, res) {
-    var formData = JSON.parse(req.body);
-    // TODO: Implementar
+	isAuthenticated(req, function(user) {
+        if (!user || !isAdmin(user)) return notAuthorized(req, res);
+
+        var formData = JSON.parse(req.body);  
+		console.log(formData);		
+        setDefaultHeaders(res);                
+		database.Categories.save(formData.catName);        
+		res.end(JSON.stringify({
+            type: true
+        }));
+    });    	
 });
 
 dispatcher.onGet("/api/posts", function(req, res) {
@@ -205,12 +229,12 @@ function _replacePageTags(req, data) {
 }
 
 function notAuthorized(req, res) {
-    fs.readFile('./views/unauthorized.html', function read(err, data) {
+    fs.readFile('./views/unauthorized.html','utf-8', function read(err, data) {
         if (err) {
             throw err;
         }
         res.writeHead(401, { 'Content-Type': 'text/html' });
-        res.end(data);
+        res.end(_replacePageTags(req, data));
     });
 }
 
@@ -227,12 +251,16 @@ function setDefaultHeaders(res) {
     res.statusCode = 200;
 }
 
+function isAdmin(user){
+	return user.isAdmin !== 0;
+}
+
 
 // =======================================================
 // ======================= SERVIDOR ======================
 // =======================================================
 
-var server = module.exports = http.createServer(function(req, res) {
+var server = module.exports = http.createServer(function(req, res) {	
     dispatcher.dispatch(req, res);
 });
 
