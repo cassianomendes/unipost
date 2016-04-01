@@ -24,7 +24,7 @@ $("#form-login").submit(function(e) {
         if (res.type == false) {
             $('#form-login .alert-warning').text(res.data).show();
         } else {
-            window.document.cookie = 'session=' + res.data.id;
+            //Cookie no Server - window.document.cookie = 'session=' + res.data.id;
             window.location = '/';
         }
     });
@@ -44,7 +44,7 @@ $("#form-signup").submit(function(e) {
         if (res.type == false) {
             $('#form-signup .alert-warning').text(res.data).show();
         } else {
-            window.document.cookie = 'session=' + res.data.id;
+            //window.document.cookie = 'session=' + res.data.id;
             window.location = '/';
         }
     });
@@ -52,7 +52,7 @@ $("#form-signup").submit(function(e) {
 
 $(function() {
     var elements;
-    // TODO: Verificar se existe o Cookie 'session'
+    // TODO: Verificar se existe o Cookie 'AuthUser'
     if (1 === 1) {
         elements = '<li><a href="/signup">Inscrever-se</a></li>' +
         '<li><a href="/login">Entrar</a></li>';
