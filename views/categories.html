@@ -23,32 +23,23 @@
                 <ul class="nav navbar-nav">
                     <li><a href="/categories">Categorias</a></li>
                 </ul>
-                <ul class="nav navbar-nav navbar-right">
-                    <li><a href="/signup">Inscrever-se</a></li>
-                    <li><a href="/login">Entrar</a></li>
-                </ul>
+                <ul class="nav navbar-nav navbar-right">@AccountHeader@</ul>
             </div>
         </div>
     </div>
     <div class="container body-content">
-        <div class="row">
-            <div class="col-md-8">
-                <section id="categoriesForm">
-                    <div>
-					<h4>Lista de Categorias</h4>
-					<table id="categoriesTable" style="width:100%">
-					  <tr>
-						<td>Nome da Categoria</td>						
-					  </tr>
-					  <tr id="categoriesRows">						
-						<td>Teste</td>						
-					  </tr>
-					</table>                      
-                     <hr />
-                    <div>    
-                </section>
-            </div>
-        </div>
+        <a href="/categories/create" class="btn btn-default btn-primary">Nova categoria</a>
+        <table id="table-categories" class="table table-hover">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Nome</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+            </tbody>
+        </table>
         <hr />
         <footer>
             <p>&copy; 2016 - UniPost</p>
