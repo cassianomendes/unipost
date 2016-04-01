@@ -9,8 +9,8 @@ $(function() {
 
     dialog = $("#dialog-post-view").dialog({
         autoOpen: false,
-        height: 300,
-        width: 350,
+        height: 400,
+        width: 500,
         modal: true,
         buttons: {
             // "Salvar": addItem,
