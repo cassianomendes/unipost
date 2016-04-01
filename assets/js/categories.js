@@ -19,23 +19,42 @@ $("#form-categories").submit(function(e) {
 
     var formData = $(this).serializeObject();
 
-    $.post("/authenticate", JSON.stringify(formData), function(res) {
+    $.post("/api/categories", JSON.stringify(formData), function(res) {
         console.log(res);
         if (res.type == false) {
-            $('#form-login .alert-warning').text(res.data).show();
+            $('#form-categories .alert-warning').text(res.data).show();
         } else {
             //Cookie no Server - window.document.cookie = 'session=' + res.data.id;
-            window.location = '/';
+            window.location = '/categories';
         }
     });
 });
 
 
 $(function() {
-    $.get("/categoriesList", function(res) {
-		console.log(res);
-		$.each(res.data, function(index, value ){
-			$("#categoriesTable").last().append("<tr><td>"+value.name+"</td></tr>");
-		});        
-    });
+    _loadCategoriesTable();
+    
+    function _loadCategoriesTable() {
+        $.getJSON('/api/categories', function(res) {
+            if (res.type == false) {
+                return;
+            }
+            $('tbody', '#table-categories').find('tr').remove();
+            $(res.data).each(function(index, item){
+                var trElement = '<tr item-id=' + item.id + '>' +
+                                '	<td>' +
+                                '		' + (index + 1) +
+                                '	</td>' +
+                                '	<td>' +
+                                '		' + item.name +
+                                '	</td>' +
+                                '	<td>' +
+                                '		<a href="/categories/edit?ItemId=' + item.id + '">alterar</a>' +
+                                '		<a href="/categories/delete?ItemId=' + item.id + '">excluir</a>' +  
+                                '	</td>' +
+                                '<tr>';
+                $('#table-categories tbody').append($(trElement));
+            });
+        });
+    }
 });

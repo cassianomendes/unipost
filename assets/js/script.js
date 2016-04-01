@@ -19,12 +19,11 @@ $("#form-login").submit(function(e) {
 
     var formData = $(this).serializeObject();
 
-    $.post("/authenticate", JSON.stringify(formData), function(res) {
+    $.post("/api/authenticate", JSON.stringify(formData), function(res) {
         console.log(res);
         if (res.type == false) {
             $('#form-login .alert-warning').text(res.data).show();
         } else {
-            //Cookie no Server - window.document.cookie = 'session=' + res.data.id;
             window.location = '/';
         }
     });
@@ -34,35 +33,72 @@ $("#form-signup").submit(function(e) {
     e.preventDefault();
 
     var formData = $(this).serializeObject();
-
+    
     if (formData.password !== formData.confirmPassword) {
         $('#form-signup .alert-warning').text("As senhas não coincidem.").show();
         return;
     }
 
-    $.post("/signup", JSON.stringify(formData), function(res) {
+    $.post("/api/signup", JSON.stringify(formData), function(res) {
         if (res.type == false) {
             $('#form-signup .alert-warning').text(res.data).show();
         } else {
-            //window.document.cookie = 'session=' + res.data.id;
             window.location = '/';
         }
     });
 });
 
 $(function() {
-    var elements;
-    // TODO: Verificar se existe o Cookie 'AuthUser'
-    if (1 === 1) {
-        elements = '<li><a href="/signup">Inscrever-se</a></li>' +
-        '<li><a href="/login">Entrar</a></li>';
-    } else {
-        elements = '<li><a id="link-logout" href="#">Sair</a></li>';
-    }
-    $('#account-header').append($(elements));
+    loadPosts();
 });
 
 $("#link-logout").click(function (e) {
     // TODO: Limpar o Cookie 'session'
+	document.cookie = "AuthUser=; expires=Thu, 01 Jan 1970 00:00:00 GMT";
+                  //(sDomain ? "; domain=" + sDomain : "") + 
+                  //s(sPath ? "; path=" + sPath : "");
     window.location = '/';
 });
+
+$('#search-post').keypress(function(e) {
+    if(e.which == 13) { // ENTER
+        loadPosts($(this).val());
+    }
+});
+
+function loadCategories() {
+	$.getJSON('/api/categories', function(res) {
+		// $('#select-category').find('option').remove();
+		$(res.data).each(function(index, item){
+			var option = '<option value="' + item.id + '">' + item.name + '</option>';
+			$('#select-category').append($(option));
+		});
+	});
+}
+
+function loadPosts(like) {
+    var url = '/api/posts' + (like ? '?title=' + like : '');
+    $.getJSON(url, function(res){
+        if (res.type == false) {
+            return;
+        }
+		$('tbody', '#table-posts').find('tr').remove();
+		$(res.data).each(function(index, item){
+			var trElement = '<tr item-id=' + item.id + '>' +
+                            '	<td>' +
+                            '		' + (index + 1) +
+                            '	</td>' +
+                            '	<td>' +
+                            '		' + item.title +
+                            '	</td>' +
+                            '	<td>' +
+                            '		' + item.category +
+                            '	</td>' +
+                            '	<td>' +
+                            '		<a href="/posts?ItemId=' + item.id + '">visualizar</a>' + 
+                            '	</td>' +
+                            '<tr>';
+			$('#table-posts tbody').append($(trElement));
+		});
+	});
+}
