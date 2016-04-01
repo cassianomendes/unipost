@@ -186,8 +186,7 @@ dispatcher.onPost("/api/categories", function(req, res) {
 	isAuthenticated(req, function(user) {
         if (!user || !isAdmin(user)) return notAuthorized(req, res);
 
-        var formData = JSON.parse(req.body);  
-		console.log(formData);		
+        var formData = JSON.parse(req.body);		
         setDefaultHeaders(res);                
 		database.Categories.save(formData.catName);        
 		res.end(JSON.stringify({
@@ -373,5 +372,5 @@ var server = module.exports = http.createServer(function(req, res) {
 });
 
 server.listen(port, function() {
-    console.log("Server listening on: http://localhost:%s", port);
+    console.log("Servidor escutando em: http://localhost:%s", port);
 });
