@@ -7,7 +7,15 @@
     margin-top:10px;
 }
 
-.posts-header > div{
+.posts-header {
+    height: 34px;
+}
+
+div .table-responsive {
+    margin-top: 10px;
+}
+
+.posts-header > div {
     float: right;
 }
 
