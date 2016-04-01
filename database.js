@@ -90,5 +90,18 @@ database.Posts = {
             if (err) callback(err);
             callback(null, rows[0]);
         });
+    },
+    allPendent: function (like, callback) {
+        db.all("SELECT p.id, u.fullName as author, p.title, c.name category " + 
+               "FROM Post p " + 
+               "INNER JOIN Category c ON c.id = p.categoryId " + 
+               "INNER JOIN User u ON u.id = p.userId " +
+               "WHERE p.status = 0 AND p.title LIKE '%" + like + "%' ", callback);
+    },
+    delete: function (id) {
+        db.run("DELETE FROM Post where id=" + id);
+    },
+    approve: function (id) {
+        db.run("UPDATE Post SET status=1 WHERE id=" + id);
     }
 }

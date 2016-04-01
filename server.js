@@ -94,6 +94,20 @@ dispatcher.onGet("/posts/create", function(req, res) {
     });
 });
 
+dispatcher.onGet("/posts/moderate", function (req, res) {
+    isAuthenticated(req, function (user) {
+       if (!user || !isAdmin(user) ) return notAuthorized(req, res);
+        
+        fs.readFile('./views/posts/moderate.html', 'utf-8', function read(err, data) {
+           if (err) {
+               throw err;
+           }
+            res.writeHead(200, { 'Content-Type': 'text/html' });
+            res.end(_replacePageTags(req, data));
+        });
+    });
+});
+
 
 // =======================================================
 // ========================= API =========================
@@ -201,6 +215,25 @@ dispatcher.onGet("/api/posts/mostRecents", function(req, res) {
     });
 });
 
+dispatcher.onGet("/api/posts/allPendent", function(req, res) {
+    var url_parts = url.parse(req.url, true);
+    var query = url_parts.query;
+    database.Posts.allPendent(query.title ? query.title : '', function(err, rows) {
+        setDefaultHeaders(res);
+        if (err) {
+            res.end(JSON.stringify({
+                type: false,
+                data: "Erro ocorrido: " + err
+            }));
+        } else {
+            res.end(JSON.stringify({
+                type: true,
+                data: rows
+            }));
+        }
+    });
+});
+
 dispatcher.onGet("/api/posts", function(req, res) {
     var url_parts = url.parse(req.url, true);
     var query = url_parts.query;
@@ -229,6 +262,32 @@ dispatcher.onPost("/api/posts", function(req, res) {
         setDefaultHeaders(res);
         
         database.Posts.save({ categoryId: formData.category, userId: user.id, title: formData.title, content: formData.content, status: 0 });
+        res.end(JSON.stringify({
+            type: true
+        }));
+    });
+});
+
+dispatcher.onPost("/api/posts/delete", function(req, res) {
+    isAuthenticated(req, function(user) {
+        if (!user || !isAdmin(user)) return notAuthorized(req, res);
+
+        database.Posts.delete(req.params.id);
+        
+        setDefaultHeaders(res);
+        res.end(JSON.stringify({
+            type: true
+        }));
+    });
+});
+
+dispatcher.onPost("/api/posts/approve", function(req, res) {
+    isAuthenticated(req, function(user) {
+        if (!user || !isAdmin(user)) return notAuthorized(req, res);
+        
+        database.Posts.approve(req.params.id);
+        
+        setDefaultHeaders(res);
         res.end(JSON.stringify({
             type: true
         }));
