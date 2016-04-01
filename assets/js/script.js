@@ -92,10 +92,17 @@ function loadPosts(like) {
                             '		' + item.category +
                             '	</td>' +
                             '	<td>' +
-                            '		<a href="/posts?ItemId=' + item.id + '">visualizar</a>' + 
+                            '		<a onClick="openDialog('+item.content+')">visualizar</a>' + 
                             '	</td>' +
                             '<tr>';
 			$('#table-posts tbody').append($(trElement));
 		});
 	});
+}
+
+function openDialog(content){
+    $('#dialog').dialog();
+    $('#dialog-content').find('div').remove();    
+    var text ="<div>" + content + "</div>";    
+    $('#dialog-content').append($(text));        
 }
