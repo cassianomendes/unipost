@@ -286,6 +286,8 @@ dispatcher.onPost("/api/posts", function(req, res) {
         
         setDefaultHeaders(res);
         
+        formData.content = formData.content.replace(/(<([^>]+)>)/ig, "");
+        
         database.Posts.save({ categoryId: formData.category, userId: user.id, title: formData.title, content: formData.content, status: 0 });
         res.end(JSON.stringify({
             type: true

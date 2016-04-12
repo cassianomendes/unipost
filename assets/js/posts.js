@@ -47,7 +47,7 @@ function openDialog(id) {
             return;
         }
         postId = id;
-        $('#dialog-post-view').empty().append(res.data.content);
+        $('#dialog-post-view').empty().text(res.data.content);
         dialog.dialog("option", "title", res.data.title).dialog("open");
     });
 }
