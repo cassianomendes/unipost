@@ -155,13 +155,24 @@ dispatcher.onPost("/api/signup", function(req, res) {
                     data: "Usuário já existe!"
                 }));
             } else {
-                database.Users.save({ fullName: formData.fullName, email: formData.email, password: formData.password, isAdmin: 0 }, function(err, user1) {
+				try {
+					
+				if (obj != undefined && obj.email.indexOf("\'") > 0) throws;
+                
+				database.Users.save({ fullName: formData.fullName, email: formData.email, password: formData.password, isAdmin: 0 }, function(err, user1) {
                     cookie.setAuthCookie(res, user1.email);
                     res.end(JSON.stringify({
                         type: true,
                         data: user1
                     }));
                 });
+				
+				} catch (ex) {
+					 res.end(JSON.stringify({
+						type: false,
+						data: "Ocorreu um erro!"
+					}));
+				}
             }
         }
     });
