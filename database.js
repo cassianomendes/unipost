@@ -61,12 +61,13 @@ database.Categories = {
 }
 
 database.Users = {
-    save: function (obj, callback) {
+    save: function (obj, callback) {		
         db.run("INSERT INTO User (fullName, email, password, isAdmin) VALUES (?,?,?,?)", obj.fullName, obj.email, obj.password, obj.isAdmin);
         this.findOne({ email: obj.email }, callback);
     },
     findOne: function (obj, callback) {
-        db.all("SELECT * FROM User WHERE email='" + obj.email + "'", function (err, rows) {
+        db.all("SELECT * FROM User WHERE email='" + obj.email.replace("\'", "\'\'") + "'", function (err, rows) {
+			console.log(rows);
             if (err) callback(err);
             callback(null, rows[0]);
         });
