@@ -2,6 +2,8 @@
 
 var cookie = module.exports = {} ;
 var authCookieName = "AuthUser";
+var crypto = require("crypto");
+var passwd = 'UnIsInOs2016';
 
 cookie.getCookies = (req) => {
 	var list = {}, rc = req.headers.cookie;
@@ -17,7 +19,12 @@ cookie.getCookies = (req) => {
 cookie.getAuthCookie = (req) => {
 	var list = cookie.getCookies(req);	
 	if (!list[authCookieName]) return undefined;
-	return new Buffer(list[authCookieName], 'base64').toString("UTF-8");
+    
+    var decipher = crypto.createDecipher('aes-256-cbc', passwd);
+    var decripted = decipher.update(list[authCookieName], 'base64', 'utf8');
+    decripted += decipher.final('utf8');
+                         
+	return decripted;
 };
 
 cookie.setAuthCookie = (res, value) => {
@@ -25,6 +32,12 @@ cookie.setAuthCookie = (res, value) => {
 	var time = now.getTime();
 	time += 3600 * 1000;
 	now.setTime(time);
-	res.setHeader('Set-Cookie', authCookieName + '=' + new Buffer(value).toString('base64') + "; expires="+ now.toUTCString() + "; path=/;");
+    
+    var cipher = crypto.createCipher('aes-256-cbc', passwd);
+    var cripted = cipher.update(value, 'utf8', 'base64');
+    cripted += cipher.final('base64');
+    
+	res.setHeader('Set-Cookie', authCookieName + '='
+                  + cripted + "; expires="+ now.toUTCString() + "; path=/;");
 	return res;
 };

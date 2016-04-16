@@ -67,7 +67,6 @@ database.Users = {
     },
     findOne: function (obj, callback) {
         db.all("SELECT * FROM User WHERE email='" + obj.email.replace("\'", "\'\'") + "'", function (err, rows) {
-			console.log(rows);
             if (err) callback(err);
             callback(null, rows[0]);
         });
